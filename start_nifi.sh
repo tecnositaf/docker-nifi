@@ -23,14 +23,14 @@ do_cluster_node_configure() {
 
   if [ -z "$ELECTION_TIME" ]; then ELECTION_TIME="5 mins"; fi
   sed -i "s/nifi\.cluster\.flow\.election\.max\.wait\.time=.*/nifi.cluster.flow.election.max.wait.time=${ELECTION_TIME}/g" ${NIFI_HOME}/conf/nifi.properties
-  
+
   sed -i "s/nifi\.cluster\.node\.protocol\.port=.*/nifi.cluster.node.protocol.port=${NODE_PROTOCOL_PORT:-2882}/g" ${NIFI_HOME}/conf/nifi.properties
   sed -i "s/nifi\.zookeeper\.connect\.string=.*/nifi.zookeeper.connect.string=$ZK_CONNECT_STRING/g" ${NIFI_HOME}/conf/nifi.properties
 
   if [ -z "$ZK_ROOT_NODE" ]; then ZK_ROOT_NODE="nifi"; fi
   sed -i "s/nifi\.zookeeper\.root\.node=.*/nifi.zookeeper.root.node=\/$ZK_ROOT_NODE/g" ${NIFI_HOME}/conf/nifi.properties
   sed -i "s/<property name=\"Connect String\">.*</<property name=\"Connect String\">$ZK_CONNECT_STRING</g" ${NIFI_HOME}/conf/state-management.xml
- 
+
   if [ ! -z "$ZK_MYID" ]; then
     sed -i "s/nifi\.state\.management\.embedded\.zookeeper\.start=false/nifi.state.management.embedded.zookeeper.start=true/g" ${NIFI_HOME}/conf/nifi.properties
     mkdir -p ${NIFI_HOME}/state/zookeeper
@@ -39,6 +39,10 @@ do_cluster_node_configure() {
 
   sed -i "/^server\./,$ d" ${NIFI_HOME}/conf/zookeeper.properties
   srv=1; IFS=","; for node in $ZK_NODES; do sed -i "\$aserver.$srv=$node:${ZK_MONITOR_PORT:-2888}:${ZK_ELECTION_PORT:-3888}" ${NIFI_HOME}/conf/zookeeper.properties; let "srv+=1"; done
+
+  sed -i "s/nifi\.cluster\.protocol\.heartbeat\.interval=.*/nifi.cluster.protocol.heartbeat.interval=$HEARTBEAT_INTERVAL/g" ${NIFI_HOME}/conf/nifi.properties
+  sed -i "s/nifi\.cluster\.node\.connection\.timeout=.*/nifi.cluster.node.connection.timeout=$CONNECTION_TIMEOUT/g" ${NIFI_HOME}/conf/nifi.properties
+
 }
 
 sed -i "s/nifi\.ui\.banner\.text=.*/nifi.ui.banner.text=${BANNER_TEXT}/g" ${NIFI_HOME}/conf/nifi.properties

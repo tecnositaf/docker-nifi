@@ -42,6 +42,7 @@ do_cluster_node_configure() {
 
   sed -i "s/nifi\.cluster\.protocol\.heartbeat\.interval=.*/nifi.cluster.protocol.heartbeat.interval=$HEARTBEAT_INTERVAL/g" ${NIFI_HOME}/conf/nifi.properties
   sed -i "s/nifi\.cluster\.node\.connection\.timeout=.*/nifi.cluster.node.connection.timeout=$CONNECTION_TIMEOUT/g" ${NIFI_HOME}/conf/nifi.properties
+  sed -i "s/nifi\.cluster\.node\.read\.timeout=.*/nifi.cluster.node.read.timeout=$READ_TIMEOUT/g" ${NIFI_HOME}/conf/nifi.properties
 
 }
 

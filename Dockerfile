@@ -5,9 +5,8 @@ ENV        BANNER_TEXT="" \
            HEARTBEAT_INTERVAL="5 sec" \
            CONNECTION_TIMEOUT="5 sec" \
            READ_TIMEOUT="5 sec"
+VOLUME     ${NIFI_HOME}/extra-lib \
+           ${NIFI_HOME}/flowfile
 COPY       start_nifi.sh /${NIFI_HOME}/
-VOLUME     /opt/datafiles \
-           /opt/scriptfiles \
-           /opt/certfiles
 RUN        chmod +x ./start_nifi.sh
 CMD        ./start_nifi.sh

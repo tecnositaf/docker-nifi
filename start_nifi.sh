@@ -47,9 +47,13 @@ do_cluster_node_configure() {
 }
 
 sed -i "s/nifi\.ui\.banner\.text=.*/nifi.ui.banner.text=${BANNER_TEXT}/g" ${NIFI_HOME}/conf/nifi.properties
+FLOWFILE_LOCATION=${NIFI_HOME}/flowfile/flow.xml.gz
+sed -i "s~nifi\.flow\.configuration\.file.*~nifi.flow.configuration.file=${FLOWFILE_LOCATION}~g" ${NIFI_HOME}/conf/nifi.properties
 do_site2site_configure
 
 if [ ! -z "$IS_CLUSTER_NODE" ]; then do_cluster_node_configure; fi
+
+if [ "$(ls -A ${NIFI_HOME}/extra-lib)" ]; then cp ${NIFI_HOME}/extra-lib/* ${NIFI_HOME}/lib/; fi
 
 tail -F ${NIFI_HOME}/logs/nifi-app.log &
 ${NIFI_HOME}/bin/nifi.sh run
